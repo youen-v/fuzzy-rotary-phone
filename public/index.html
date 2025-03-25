@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <h1>Pokemon</h1>
+        <form id="pokemonForm" action="/api/pokemon/" method="GET">
+        <input type="text" id="pokemonName" placeholder="Nom du Pokémon" required />
+        <button type="submit">Rechercher</button>
+      </form>
+    </main>
+    <div id="result"></div>
+</body>
+</html>
+<script>
+    document
+  .getElementById("pokemonForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const input = document.getElementById("pokemonName");
+    const name = input.value.trim().toLowerCase();
+    const resultDiv = document.getElementById("result");
+
+    resultDiv.innerHTML = "Recherche en cours...";
+
+    try {
+      const response = await fetch(`/api/pokemon/${name}`);
+
+      if (!response.ok) {
+        throw new Error("Pokémon non trouvé");
+      }
+
+      const data = await response.json();
+
+      resultDiv.innerHTML = `
+        <h2>${data.name.toUpperCase()}</h2>
+        <img src="${data.sprites.front_default}" alt="${data.name}">
+        <p>Type(s) : ${data.types.map((t) => t.type.name).join(", ")}</p>
+      `;
+    } catch (error) {
+      resultDiv.innerHTML = `<p style="color:red;">Erreur : ${error.message}</p>`;
+    }
+  });
+
+</script>
